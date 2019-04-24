@@ -6,22 +6,36 @@ import arcpy, os
 # x_sec_center_points = arcpy.GetParameterAsText(3)
 
 xSecPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Transect_Points_Z_WSE.shp"
-xSecStartID = 507
-xSecEndID= 499
+xSecStartID = 523
+xSecEndID= 485
 xSecCenterPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Q2002.shp"
 
-sumStatsTblStartID = r'in_memory\statTblStart'
-sumStatsTblEndID = r'in_memory\statTblEnd'
 xSecPointsStart = r'in_memory\ptsStart'
 xSecPointsEnd = r'in_memory\ptsEnd'
+startMaxAttributes = [0,0]
+startMinAttributes =[999999,0]
+endMaxAttributes = [0,0]
+endMinAttributes =[999999,0]
 
 arcpy.Select_analysis(xSecPoints, xSecPointsStart, "ID = " + str(xSecStartID))
-arcpy.Select_analysis(xSecPoints, xSecPointsEnd, "ID = " + str(xSecEndID))
-
-# arcpy.Statistics_analysis(xSecPointsStart, sumStatsTblStartID, [["POINT_X", "MAX"], ["POINT_X","MIN"]], "FID")
-# arcpy.Statistics_analysis(xSecPointsEnd, sumStatsTblEndID, [["POINT_X", "MAX"], ["POINT_X","MIN"]])
-
-
-cursor = arcpy.da.SearchCursor(sumStatsTblStartID, ['MAX_POINT_X', 'MIN_POINT_X'])
+cursor = arcpy.da.SearchCursor(xSecPointsStart, ['POINT_X', 'POINT_Y'])
 for row in cursor:
-    print(row)
+    if row[0] > startMaxAttributes[0]:
+        startMaxAttributes = row
+    if row[0] < startMinAttributes[0]:
+        startMinAttributes = row
+
+arcpy.Select_analysis(xSecPoints, xSecPointsEnd, "ID = " + str(xSecEndID))
+cursor = arcpy.da.SearchCursor(xSecPointsEnd, ['POINT_X', 'POINT_Y'])
+for row in cursor:
+    if row[0] > endMaxAttributes[0]:
+        endMaxAttributes = row
+    if row[0] < endMinAttributes[0]:
+        endMinAttributes = row
+
+xa, ya = startMaxAttributes
+xb, yb = startMinAttributes
+xc, yc = endMaxAttributes
+xd, yd = endMinAttributes
+
+print(((yc-xc*((yd-yc)/(xd-xc)))-(ya-xa*((yb-ya)/(xb-xa))))/(((yb-ya)/(xb-xa))-((yd-yc)/(xd-xc))))
