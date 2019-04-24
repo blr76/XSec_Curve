@@ -1,4 +1,4 @@
-import arcpy, os
+import arcpy, math
 
 # xSecPoints = arcpy.GetParameterAsText(0)
 # xSecStartID = arcpy.GetParameterAsText(1)
@@ -47,5 +47,11 @@ point = arcpy.Point(intersectX, intersectY)
 pointGeometry = arcpy.PointGeometry(point)
 arcpy.CopyFeatures_management(pointGeometry, "test2")
 
+clRowVal = []
 
-arcpy.SearchCursor(xSecCenterPoints, field_names, {where_clause}, {spatial_reference}, {explode_to_points}, {sql_clause})
+with arcpy.da.SearchCursor(xSecCenterPoints, ["SHAPE@X", "SHAPE@Y","ID"], "ID >= " + str(xSecStartID) + "AND ID <= " + str(xSecEndID)) as cursor:
+    for row in cursor:
+        clRowVal.append([row[0],row[1],row[2]])
+
+for row in clRowVal:
+    row.append((intersectY-row[1])/(intersectX-row[0]))
