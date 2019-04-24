@@ -6,8 +6,8 @@ import arcpy, os
 # x_sec_center_points = arcpy.GetParameterAsText(3)
 
 xSecPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Transect_Points_Z_WSE.shp"
-xSecStartID = 523
-xSecEndID= 485
+xSecStartID = 485
+xSecEndID= 523
 xSecCenterPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Q2002.shp"
 
 xSecPointsStart = r'in_memory\ptsStart'
@@ -38,4 +38,14 @@ xb, yb = startMinAttributes
 xc, yc = endMaxAttributes
 xd, yd = endMinAttributes
 
-print(((yc-xc*((yd-yc)/(xd-xc)))-(ya-xa*((yb-ya)/(xb-xa))))/(((yb-ya)/(xb-xa))-((yd-yc)/(xd-xc))))
+intersectX = ((yc-xc*((yd-yc)/(xd-xc)))-(ya-xa*((yb-ya)/(xb-xa))))/(((yb-ya)/(xb-xa))-((yd-yc)/(xd-xc)))
+intersectY = ya-xa*((yb-ya)/(xb-xa))+intersectX*((yb-ya)/(xb-xa))
+
+intersect = [intersectX, intersectY]
+point = arcpy.Point(intersectX, intersectY)
+
+pointGeometry = arcpy.PointGeometry(point)
+arcpy.CopyFeatures_management(pointGeometry, "test2")
+
+
+arcpy.SearchCursor(xSecCenterPoints, field_names, {where_clause}, {spatial_reference}, {explode_to_points}, {sql_clause})
