@@ -6,10 +6,10 @@ import arcpy, math
 # x_sec_center_points = arcpy.GetParameterAsText(3)
 
 xSecPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Transect_Points_Z_WSE.shp"
-xSecStartID = 123
-xSecEndID= 150
+xSecStartID = 485
+xSecEndID= 523
 xSecCenterPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Q2002.shp"
-xSecLineLength = -200
+xSecLineLength = 200
 
 xSecPointsStart = r'in_memory\ptsStart'
 xSecPointsEnd = r'in_memory\ptsEnd'
