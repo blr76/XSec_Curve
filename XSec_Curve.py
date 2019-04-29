@@ -1,10 +1,11 @@
 import arcpy, math
 
+arcpy.AddMessage("Loading Data...")
 xSecPoints = arcpy.GetParameterAsText(0)
 xSecStartID = arcpy.GetParameterAsText(1)
 xSecEndID= arcpy.GetParameterAsText(2)
 x_sec_center_points = arcpy.GetParameterAsText(3)
-xSecLineLength = arcpy.GetParameterAsText(4)
+xSecLineLength = float(arcpy.GetParameterAsText(4))
 deleteAndAppend = arcpy.GetParameterAsText(5)
 
 # xSecPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Transect_Points_Z_WSE.shp"
@@ -50,6 +51,7 @@ intersectY = ya-xa*((yb-ya)/(xb-xa))+intersectX*((yb-ya)/(xb-xa))
 intersect = [intersectX, intersectY]
 
 with arcpy.da.SearchCursor(xSecCenterPoints, ["ID", "SHAPE@X", "SHAPE@Y"], "ID >= " + str(xSecStartID) + "AND ID <= " + str(xSecEndID)) as cursor:
+    arcpy.AddMessage("Casting Lines...")
     for row in cursor:
         m = ((intersectY - row[2]) / (intersectX - row[1]))
         c = 1 / math.sqrt(1 + math.pow(m,2))
@@ -79,7 +81,8 @@ arcpy.XYToLine_management(xSecResultsTable,xSecLineResults,
                          "FROM_X","FROM_Y","TO_X",
                          "TO_Y","","ID",xSecPoints)
 
-if(deleteAndAppend):
+if(deleteAndAppend == "True"):
+    arcpy.AddMessage("Deleting and Appending...")
     outPaL = r"in_memory\pallin"
     arcpy.GeneratePointsAlongLines_management(xSecLineResults, outPaL, 'DISTANCE', '1 meters')
     with arcpy.da.UpdateCursor(xSecPoints, "ID", "ID >= " +str(xSecStartID)+" AND ID <= " + str(xSecEndID)) as cursor:
