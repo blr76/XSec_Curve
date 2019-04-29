@@ -37,39 +37,26 @@ for row in cursor:
     if row[0] < endMinAttributes[0]:
         endMinAttributes = row
 
-# xa, ya = startMaxAttributes
-# xb, yb = startMinAttributes
-# xc, yc = endMaxAttributes
-# xd, yd = endMinAttributes
-
-###DEBUG###
-xa, ya, f = startMaxAttributes
-xb, yb, f = startMinAttributes
-xc, yc, f = endMaxAttributes
-xd, yd, f = endMinAttributes
-print('startMaxAttributes' + str(startMaxAttributes))
-print('startMinAttributes' + str(startMinAttributes))
-print('endMaxAttributes' + str(endMaxAttributes))
-print('endMinAttributes' + str(endMinAttributes))
-###DEBUG###
+xa, ya = startMaxAttributes
+xb, yb = startMinAttributes
+xc, yc = endMaxAttributes
+xd, yd = endMinAttributes
 
 intersectX = ((yc-xc*((yd-yc)/(xd-xc)))-(ya-xa*((yb-ya)/(xb-xa))))/(((yb-ya)/(xb-xa))-((yd-yc)/(xd-xc)))
 intersectY = ya-xa*((yb-ya)/(xb-xa))+intersectX*((yb-ya)/(xb-xa))
 
 intersect = [intersectX, intersectY]
 
-##DEBUG##
-point = arcpy.Point(intersectX, intersectY)
-pointGeometry = arcpy.PointGeometry(point)
-arcpy.CopyFeatures_management(pointGeometry, "test2")
-##DEBUG##
-
 with arcpy.da.SearchCursor(xSecCenterPoints, ["ID", "SHAPE@X", "SHAPE@Y"], "ID >= " + str(xSecStartID) + "AND ID <= " + str(xSecEndID)) as cursor:
     for row in cursor:
         m = ((intersectY - row[2]) / (intersectX - row[1]))
         c = 1 / math.sqrt(1 + math.pow(m,2))
         s =  m / math.sqrt(1 + math.pow(m,2))
-        clRowVal.append([row[0], intersectX, intersectY, row[1] + (xSecLineLength * c), row[2] + (xSecLineLength * s),m,c,s])
+        if(row[1] > intersectX):
+            clRowVal.append([row[0], intersectX, intersectY, row[1] + (xSecLineLength * c), row[2] + (xSecLineLength * s),m,c,s])
+        else:
+            clRowVal.append([row[0], intersectX, intersectY, row[1] - (xSecLineLength * c), row[2] - (xSecLineLength * s),m,c,s])
+
 
 arcpy.AddField_management(xSecResultsTable, "ID", "LONG")
 arcpy.AddField_management(xSecResultsTable, "FROM_X", "DOUBLE")
