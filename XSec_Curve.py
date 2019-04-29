@@ -1,17 +1,17 @@
 import arcpy, math
 
-# xSecPoints = arcpy.GetParameterAsText(0)
-# xSecStartID = arcpy.GetParameterAsText(1)
-# xSecEndID= arcpy.GetParameterAsText(2)
-# x_sec_center_points = arcpy.GetParameterAsText(3)
-# xSecLineLength = arcpy.GetParameterAsText(4)
-# deleteAndAppend = arcpy.GetParameterAsText(5)
+xSecPoints = arcpy.GetParameterAsText(0)
+xSecStartID = arcpy.GetParameterAsText(1)
+xSecEndID= arcpy.GetParameterAsText(2)
+x_sec_center_points = arcpy.GetParameterAsText(3)
+xSecLineLength = arcpy.GetParameterAsText(4)
+deleteAndAppend = arcpy.GetParameterAsText(5)
 
-xSecPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Transect_Points_Z_WSE.shp"
-xSecStartID = 123
-xSecEndID= 150
-xSecCenterPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Q2002.shp"
-xSecLineLength = 200
+# xSecPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Transect_Points_Z_WSE.shp"
+# xSecStartID = 123
+# xSecEndID= 150
+# xSecCenterPoints = r"E:\Trinity_River\Trinity_Cleanup\XsecTEST\T1_Q2002.shp"
+# xSecLineLength = 200
 
 xSecPointsStart = r'in_memory\ptsStart'
 xSecPointsEnd = r'in_memory\ptsEnd'
@@ -87,4 +87,3 @@ if(deleteAndAppend):
             cursor.deleteRow()
 
     arcpy.Append_management(outPaL,xSecPoints, 'NO_TEST')
-else:
