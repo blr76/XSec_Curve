@@ -6,7 +6,8 @@ xSecStartID = arcpy.GetParameterAsText(1)
 xSecEndID= arcpy.GetParameterAsText(2)
 x_sec_center_points = arcpy.GetParameterAsText(3)
 xSecLineLength = float(arcpy.GetParameterAsText(4))
-deleteAndAppend = arcpy.GetParameterAsText(5)
+deleteAndAppend = str(arcpy.GetParameterAsText(5))
+newPointXSecOut = arcpy.GetParameterAsText(6)
 
 xSecPointsStart = r'in_memory\ptsStart'
 xSecPointsEnd = r'in_memory\ptsEnd'
@@ -17,6 +18,7 @@ endMinAttributes =[999999,0,0]
 clRowVal = []
 xSecResultsTable = arcpy.CreateTable_management("in_memory", "xSecResultsTable")
 xSecLineResults = r"in_memory\xsSecResults"
+newXSecPoints = r"in_memory\newXSecPoints"
 
 arcpy.Select_analysis(xSecPoints, xSecPointsStart, "ID = " + str(xSecStartID))
 cursor = arcpy.da.SearchCursor(xSecPointsStart, ['POINT_X', 'POINT_Y', 'FID'])
@@ -75,12 +77,17 @@ arcpy.XYToLine_management(xSecResultsTable,xSecLineResults,
                          "FROM_X","FROM_Y","TO_X",
                          "TO_Y","","ID",xSecPoints)
 
-if(deleteAndAppend == "True"):
+arcpy.AddMessage("Generating Points...")
+arcpy.GeneratePointsAlongLines_management(xSecLineResults, newXSecPoints, 'DISTANCE', '1 meters')
+
+if(deleteAndAppend == "true"):
     arcpy.AddMessage("Deleting and Appending...")
-    outPaL = r"in_memory\pallin"
-    arcpy.GeneratePointsAlongLines_management(xSecLineResults, outPaL, 'DISTANCE', '1 meters')
     with arcpy.da.UpdateCursor(xSecPoints, "ID", "ID >= " +str(xSecStartID)+" AND ID <= " + str(xSecEndID)) as cursor:
         for row in cursor:
             cursor.deleteRow()
-
-    arcpy.Append_management(outPaL,xSecPoints, 'NO_TEST')
+    arcpy.Append_management(newXSecPoints,xSecPoints, 'NO_TEST')
+if(newPointXSecOut):
+        arcpy.AddMessage("Copying features to " + newPointXSecOut)
+        arcpy.CopyFeatures_management(newXSecPoints, newPointXSecOut);
+elif(deleteAndAppend == "false"):
+    arcpy.AddError("No output specified")
