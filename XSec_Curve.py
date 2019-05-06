@@ -4,7 +4,7 @@ arcpy.AddMessage("Loading Data...")
 xSecPoints = arcpy.GetParameterAsText(0)
 xSecStartID = arcpy.GetParameterAsText(1)
 xSecEndID= arcpy.GetParameterAsText(2)
-x_sec_center_points = arcpy.GetParameterAsText(3)
+xSecCenterPoints = arcpy.GetParameterAsText(3)
 xSecLineLength = float(arcpy.GetParameterAsText(4))
 deleteAndAppend = str(arcpy.GetParameterAsText(5))
 newPointXSecOut = arcpy.GetParameterAsText(6)
@@ -21,7 +21,7 @@ xSecLineResults = r"in_memory\xsSecResults"
 newXSecPoints = r"in_memory\newXSecPoints"
 
 arcpy.Select_analysis(xSecPoints, xSecPointsStart, "ID = " + str(xSecStartID))
-cursor = arcpy.da.SearchCursor(xSecPointsStart, ['POINT_X', 'POINT_Y', 'FID'])
+cursor = arcpy.da.SearchCursor(xSecPointsStart, ['SHAPE@X', 'SHAPE@Y', 'OID@'])
 for row in cursor:
     if row[0] > startMaxAttributes[0]:
         startMaxAttributes = row
@@ -29,7 +29,7 @@ for row in cursor:
         startMinAttributes = row
 
 arcpy.Select_analysis(xSecPoints, xSecPointsEnd, "ID = " + str(xSecEndID))
-cursor = arcpy.da.SearchCursor(xSecPointsEnd, ['POINT_X', 'POINT_Y', 'FID'])
+cursor = arcpy.da.SearchCursor(xSecPointsEnd, ['SHAPE@X', 'SHAPE@Y', 'OID@'])
 for row in cursor:
     if row[0] > endMaxAttributes[0]:
         endMaxAttributes = row
