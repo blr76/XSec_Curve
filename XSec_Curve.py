@@ -12,7 +12,7 @@ try:
 
     if(deleteAndAppend == "false" and newPointXSecOut == ""):
     	arcpy.AddError('No Output Specified')
-
+        raise
 
     if(xSecEndID<xSecStartID):
         temp = xSecStartID
